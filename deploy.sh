@@ -26,7 +26,5 @@ sudo chmod -R 755 /usr/share/nginx/html
 # Restart nginx
 sudo systemctl restart nginx
 
-# Configure firewall
-sudo firewall-cmd --permanent --add-service=http
-sudo firewall-cmd --permanent --add-service=https
-sudo firewall-cmd --reload 
+# Configure security group (this needs to be done in AWS Console)
+echo "Please ensure your EC2 security group allows inbound traffic on port 80 (HTTP)" 
