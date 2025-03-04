@@ -3,7 +3,20 @@ import { CheckCircleIcon, XCircleIcon, PhotoIcon } from '@heroicons/react/24/sol
 import axios from 'axios'
 import { featureDescriptions } from './featureDescriptions'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
+// Configure axios defaults
+axios.defaults.withCredentials = false;
+axios.defaults.headers.common['Content-Type'] = 'application/json';
+
+// Create axios instance with custom config
+const api = axios.create({
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  withCredentials: false
+});
 
 interface PredictionResult {
   prediction: 'edible' | 'poisonous';
@@ -64,16 +77,13 @@ function App() {
 
     try {
       setLoading(true);
-      const response = await fetch(`${API_URL}/analyze-image`, {
-        method: 'POST',
-        body: formData,
+      const response = await api.post('/analyze-image', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to analyze image');
-      }
-
-      const data = await response.json();
+      const data = response.data;
       console.log('Image analysis results:', data);
 
       // Update form fields with detected features
@@ -111,7 +121,7 @@ function App() {
     }
 
     try {
-      const response = await axios.post(`${API_URL}/predict`, features);
+      const response = await api.post('/api/predict', features);
       setResult(response.data);
     } catch (err: any) {
       if (err.response?.data?.error) {
